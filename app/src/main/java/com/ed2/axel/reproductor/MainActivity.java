@@ -4,9 +4,11 @@ import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Intent;
 import android.support.v7.app.ActionBar;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
+import android.view.ContextMenu;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -22,6 +24,7 @@ import android.widget.Toast;
 
 import java.lang.reflect.Array;
 import java.util.ArrayList;
+import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.List;
 
@@ -29,18 +32,31 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
 
     List<Cancion> Canciones = null;
     List<Cancion> CancionesOrdenadas = null;
-    Hashtable<String, Playlist> Playlists = null;
+    Hashtable<String, Playlist> ListadoPlaylists = null;
     Ordenamientos ordenar = new Ordenamientos();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        String[] NombresObtenidos = null;
+        try{
+            NombresObtenidos = getIntent().getExtras().getStringArray("ListasDeReproduccion");
+            if (NombresObtenidos != null) {
+                for (int i = 0; i < NombresObtenidos.length; i++) {
+                    if (ListadoPlaylists.get(NombresObtenidos[i]) == null) {
+                        ListadoPlaylists.put(NombresObtenidos[i], new Playlist(NombresObtenidos[i]));
+                    }
+                }
+            }
+        } catch (Exception ex) {
+
+        }
 
         Toolbar myToolbar = (Toolbar) findViewById(R.id.my_toolbar);
         setSupportActionBar(myToolbar);
         Canciones = new ArrayList<>();
-        Playlists = new Hashtable<>();
+        ListadoPlaylists = new Hashtable<>();
 
         // Agregar canciones a la lista de canciones
         Canciones.add(new Cancion("Stairway to heaven", "Led Zeppelin", "8:02"));
@@ -96,6 +112,25 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
                 return false;
             }
         });
+        final ListView listadoCanciones = (ListView) findViewById(R.id.lsCanciones);
+        final ListView listadoOpciones = (ListView) findViewById(R.id.lsOpciones);
+        String[] op = new String[ListadoPlaylists.size()];
+        Enumeration<String>  nombres = ListadoPlaylists.keys();
+        int i = 0;
+        while (nombres.hasMoreElements()) {
+            op[i] = nombres.nextElement();
+            i++;
+        }
+        ArrayAdapter<String> adaptadorMenu = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, op);
+        listadoOpciones.setAdapter(adaptadorMenu);
+        registerForContextMenu(listadoOpciones);
+    }
+
+    @Override
+    public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
+        super.onCreateContextMenu(menu, v, menuInfo);
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.addtoplaylist_menu, menu);
     }
 
     public void buscar(String texto){
@@ -122,6 +157,14 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
         switch (item.getItemId()){
             case R.id.menu_playlist:
                 Intent Playlists = new Intent(getApplicationContext(), PlaylistActivity.class);
+                String[] ArrayNombres = new String[ListadoPlaylists.size()];
+                Enumeration<String> ListasNombres = ListadoPlaylists.keys();
+                int i = 0;
+                while (ListasNombres.hasMoreElements()) {
+                    ArrayNombres[i] = ListasNombres.nextElement();
+                    i++;
+                }
+                Playlists.putExtra("Lista", ArrayNombres);
                 startActivity(Playlists);
                 return true;
             default:

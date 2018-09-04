@@ -11,10 +11,18 @@
         android:layout_width="match_parent"
         android:layout_height="?attr/actionBarSize"
         android:layout_alignParentLeft="true"
-        android:layout_alignParentTop="true"
+        android:layout_alignParentStart="true"
         android:background="?attr/colorPrimary"
         android:elevation="4dp"
         android:theme="@style/ThemeOverlay.AppCompat.ActionBar"
         app:popupTheme="@style/ThemeOverlay.AppCompat.Light" />
+
+    <ListView
+        android:id="@+id/lsPlaylists"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_alignParentStart="true"
+        android:layout_below="@+id/my_toolbar"
+        android:layout_alignParentLeft="true" />
 
 </RelativeLayout>

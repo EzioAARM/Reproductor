@@ -2,6 +2,7 @@ package com.ed2.axel.reproductor;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.content.Intent;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -115,7 +116,17 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.activity_main, menu);
         return true;
+    }
 
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()){
+            case R.id.menu_playlist:
+                Intent Playlists = new Intent(getApplicationContext(), PlaylistActivity.class);
+                startActivity(Playlists);
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
     }
 
     public void mostrarListado(List<Cancion> canciones){

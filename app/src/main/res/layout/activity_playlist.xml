@@ -17,12 +17,21 @@
         android:theme="@style/ThemeOverlay.AppCompat.ActionBar"
         app:popupTheme="@style/ThemeOverlay.AppCompat.Light" />
 
+    <Spinner
+        android:id="@+id/seleccionar_playlist"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentLeft="true"
+        android:layout_below="@+id/my_toolbar" />
+
     <ListView
         android:id="@+id/lsPlaylists"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="486dp"
+        android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
-        android:layout_below="@+id/my_toolbar"
-        android:layout_alignParentLeft="true" />
+        android:layout_below="@+id/seleccionar_playlist"
+        android:layout_marginTop="25dp" />
 
 </RelativeLayout>

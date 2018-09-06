@@ -32,31 +32,19 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
 
     List<Cancion> Canciones = null;
     List<Cancion> CancionesOrdenadas = null;
-    Hashtable<String, Playlist> ListadoPlaylists = null;
     Ordenamientos ordenar = new Ordenamientos();
+    GlobalClass globalClass = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        String[] NombresObtenidos = null;
-        try{
-            NombresObtenidos = getIntent().getExtras().getStringArray("ListasDeReproduccion");
-            if (NombresObtenidos != null) {
-                for (int i = 0; i < NombresObtenidos.length; i++) {
-                    if (ListadoPlaylists.get(NombresObtenidos[i]) == null) {
-                        ListadoPlaylists.put(NombresObtenidos[i], new Playlist(NombresObtenidos[i]));
-                    }
-                }
-            }
-        } catch (Exception ex) {
-
-        }
 
         Toolbar myToolbar = (Toolbar) findViewById(R.id.my_toolbar);
         setSupportActionBar(myToolbar);
         Canciones = new ArrayList<>();
-        ListadoPlaylists = new Hashtable<>();
+
+        globalClass = GlobalClass.getInstance();
 
         // Agregar canciones a la lista de canciones
         Canciones.add(new Cancion("Stairway to heaven", "Led Zeppelin", "8:02"));
@@ -112,25 +100,33 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
                 return false;
             }
         });
-        final ListView listadoCanciones = (ListView) findViewById(R.id.lsCanciones);
-        final ListView listadoOpciones = (ListView) findViewById(R.id.lsOpciones);
-        String[] op = new String[ListadoPlaylists.size()];
-        Enumeration<String>  nombres = ListadoPlaylists.keys();
-        int i = 0;
-        while (nombres.hasMoreElements()) {
-            op[i] = nombres.nextElement();
-            i++;
-        }
-        ArrayAdapter<String> adaptadorMenu = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, op);
-        listadoOpciones.setAdapter(adaptadorMenu);
-        registerForContextMenu(listadoOpciones);
+        ListView lsCanciones = findViewById(R.id.lsCanciones);
+        registerForContextMenu(lsCanciones);
     }
 
     @Override
     public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
+        Enumeration<String> lsPlaylists = globalClass.ListadoPlaylists.keys();
+        while (lsPlaylists.hasMoreElements()) {
+            menu.add(lsPlaylists.nextElement());
+        }
         super.onCreateContextMenu(menu, v, menuInfo);
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.addtoplaylist_menu, menu);
+    }
+
+    @Override
+    public boolean onContextItemSelected(MenuItem item) {
+        AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo) item.getMenuInfo();
+        for (int i = 0; i < globalClass.ListadoPlaylists.size(); i++) {
+            if (globalClass.ListadoPlaylists.get(item.getTitle()) != null){
+                globalClass.ListadoPlaylists.get(item.getTitle()).Canciones.add(CancionesOrdenadas.get(info.position));
+                CharSequence texto = "La canción se agregó a la lista de reproducción " + item.getTitle();
+                Toast.makeText(this, texto, Toast.LENGTH_SHORT);
+                i = globalClass.ListadoPlaylists.size();
+            }
+        }
+        return super.onContextItemSelected(item);
     }
 
     public void buscar(String texto){
@@ -157,14 +153,6 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
         switch (item.getItemId()){
             case R.id.menu_playlist:
                 Intent Playlists = new Intent(getApplicationContext(), PlaylistActivity.class);
-                String[] ArrayNombres = new String[ListadoPlaylists.size()];
-                Enumeration<String> ListasNombres = ListadoPlaylists.keys();
-                int i = 0;
-                while (ListasNombres.hasMoreElements()) {
-                    ArrayNombres[i] = ListasNombres.nextElement();
-                    i++;
-                }
-                Playlists.putExtra("Lista", ArrayNombres);
                 startActivity(Playlists);
                 return true;
             default:

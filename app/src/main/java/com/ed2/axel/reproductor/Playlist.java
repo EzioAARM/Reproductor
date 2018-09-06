@@ -17,4 +17,12 @@ public class Playlist {
     public void eliminarCancion(int posicion){
         Canciones.remove(posicion);
     }
+
+    public List<String> listadoCancionesString() {
+        List<String> lsCa = new ArrayList<>();
+        for (int i = 0; i < Canciones.size(); i++) {
+            lsCa.add(Canciones.get(i).toString());
+        }
+        return lsCa;
+    }
 }

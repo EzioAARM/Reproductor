@@ -11,50 +11,70 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.Spinner;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
 
-public class PlaylistActivity extends AppCompatActivity {
+public class PlaylistActivity extends AppCompatActivity  implements AdapterView.OnItemSelectedListener {
 
     private String m_Text = "";
-    private List<String> ListaNombresPasar = new ArrayList<>();
+    GlobalClass globalClass = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_playlist);
 
+        globalClass = GlobalClass.getInstance();
+
         Toolbar myToolbar = (Toolbar) findViewById(R.id.my_toolbar);
         setSupportActionBar(myToolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
 
-        String[] Nombres = getIntent().getExtras().getStringArray("Lista");
-        for (int i = 0; i < Nombres.length; i++){
-            ListaNombresPasar.add(Nombres[i]);
+        String[] Nombres = new String[globalClass.ListadoPlaylists.size()];
+        Enumeration<String> n = globalClass.ListadoPlaylists.keys();
+        int i = 0;
+        while (n.hasMoreElements()) {
+            Nombres[i] = n.nextElement();
+            i++;
         }
-        ListView listado = (ListView) findViewById(R.id.lsPlaylists);
-        ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, Nombres);
-        listado.setAdapter(adapter);
+        Spinner seleccionarPlaylist = findViewById(R.id.seleccionar_playlist);
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, Nombres);
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        seleccionarPlaylist.setAdapter(adapter);
+        seleccionarPlaylist.setOnItemSelectedListener(this);
 
         myToolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(PlaylistActivity.this, MainActivity.class);
-                String[] nombresPlaylist = new String[ListaNombresPasar.size()];
-                for (int i = 0; i < ListaNombresPasar.size(); i++) {
-                    nombresPlaylist[i] = ListaNombresPasar.get(i);
-                }
-                intent.putExtra("ListasDeReproduccion", nombresPlaylist);
                 startActivity(intent);
                 finish();
             }
         });
+    }
+
+    public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+        String seleccionado = parent.getItemAtPosition(position).toString();
+        for (int i = 0; i < globalClass.ListadoPlaylists.size(); i++) {
+            if (globalClass.ListadoPlaylists.get(seleccionado) != null) {
+                mostrarListado(globalClass.ListadoPlaylists.get(seleccionado).listadoCancionesString());
+                i = globalClass.ListadoPlaylists.size();
+            }
+        }
+    }
+
+    @Override
+    public void onNothingSelected(AdapterView<?> parent) {
+
     }
 
     private void mostrarListado(List<String> lsNombres) {
@@ -86,8 +106,19 @@ public class PlaylistActivity extends AppCompatActivity {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         m_Text = input.getText().toString();
-                        ListaNombresPasar.add(m_Text);
-                        mostrarListado(ListaNombresPasar);
+                        globalClass.ListadoPlaylists.put(m_Text, new Playlist(m_Text));
+                        String[] Nombres = new String[globalClass.ListadoPlaylists.size()];
+                        Enumeration<String> n = globalClass.ListadoPlaylists.keys();
+                        int i = 0;
+                        while (n.hasMoreElements()) {
+                            Nombres[i] = n.nextElement();
+                            i++;
+                        }
+                        Spinner seleccionarPlaylist = findViewById(R.id.seleccionar_playlist);
+                        ArrayAdapter<String> adapter = new ArrayAdapter<String>(PlaylistActivity.this, android.R.layout.simple_list_item_1, Nombres);
+                        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+                        seleccionarPlaylist.setAdapter(adapter);
+                        seleccionarPlaylist.setOnItemSelectedListener(PlaylistActivity.this);
                     }
                 });
                 builder.setNegativeButton("Cancelar", new DialogInterface.OnClickListener() {

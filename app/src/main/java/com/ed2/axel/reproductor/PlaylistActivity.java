@@ -13,9 +13,11 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.Spinner;
+import android.widget.Switch;
 import android.widget.Toast;
 
 import java.util.ArrayList;
@@ -25,7 +27,11 @@ import java.util.List;
 public class PlaylistActivity extends AppCompatActivity  implements AdapterView.OnItemSelectedListener {
 
     private String m_Text = "";
+    List<Cancion> Canciones = null;
     GlobalClass globalClass = null;
+    Ordenamientos ordenamientos = new Ordenamientos();
+    List<Cancion> CancionesOrdenadas = null;
+    boolean ordenadoAscendente = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -60,6 +66,50 @@ public class PlaylistActivity extends AppCompatActivity  implements AdapterView.
                 finish();
             }
         });
+        final Switch ordenarPor = (Switch) findViewById(R.id.ordenarPor);
+        ordenarPor.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if (ordenadoAscendente){
+                    if (ordenarPor.isChecked())
+                        CancionesOrdenadas = ordenamientos.Ascendente(Canciones);
+                    else
+                        CancionesOrdenadas = ordenamientos.AscendenteDuracion(Canciones);
+                } else {
+                    if (ordenarPor.isChecked())
+                        CancionesOrdenadas = ordenamientos.Descendente(Canciones);
+                    else
+                        CancionesOrdenadas = ordenamientos.DescendenteDuracion(Canciones);
+                }
+                List<String> lsCa = new ArrayList<>();
+                for (int i = 0; i < CancionesOrdenadas.size(); i++) {
+                    lsCa.add(CancionesOrdenadas.get(i).toString());
+                }
+                mostrarListado(lsCa);
+            }
+        });
+        final Switch ordenarMetodoS = (Switch) findViewById(R.id.ordenar_metodo);
+        ordenarMetodoS.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if (ordenarMetodoS.isChecked()){
+                    if (ordenarPor.isChecked())
+                        CancionesOrdenadas = ordenamientos.Ascendente(Canciones);
+                    else
+                        CancionesOrdenadas = ordenamientos.AscendenteDuracion(Canciones);
+                } else {
+                    if (ordenarPor.isChecked())
+                        CancionesOrdenadas = ordenamientos.Descendente(Canciones);
+                    else
+                        CancionesOrdenadas = ordenamientos.DescendenteDuracion(Canciones);
+                }
+                List<String> lsCa = new ArrayList<>();
+                for (int i = 0; i < CancionesOrdenadas.size(); i++) {
+                    lsCa.add(CancionesOrdenadas.get(i).toString());
+                }
+                mostrarListado(lsCa);
+            }
+        });
     }
 
     public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
@@ -67,6 +117,7 @@ public class PlaylistActivity extends AppCompatActivity  implements AdapterView.
         for (int i = 0; i < globalClass.ListadoPlaylists.size(); i++) {
             if (globalClass.ListadoPlaylists.get(seleccionado) != null) {
                 mostrarListado(globalClass.ListadoPlaylists.get(seleccionado).listadoCancionesString());
+                Canciones = globalClass.ListadoPlaylists.get(seleccionado).Canciones;
                 i = globalClass.ListadoPlaylists.size();
             }
         }
@@ -92,6 +143,33 @@ public class PlaylistActivity extends AppCompatActivity  implements AdapterView.
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.activity_playlist, menu);
         return true;
+    }
+
+    public void ordenar(List<Cancion> Canciones) {
+        Switch ordenarPor = (Switch) findViewById(R.id.ordenarPor);
+        Switch ordenarMetodo = (Switch) findViewById(R.id.ordenar_metodo);
+        if (ordenarPor.isChecked()){
+            if (ordenarMetodo.isChecked()) {
+                CancionesOrdenadas = ordenamientos.Ascendente(Canciones);
+                ordenadoAscendente = true;
+            } else {
+                CancionesOrdenadas = ordenamientos.Descendente(Canciones);
+                ordenadoAscendente = false;
+            }
+        } else {
+            if (ordenarMetodo.isChecked()) {
+                CancionesOrdenadas = ordenamientos.AscendenteDuracion(Canciones);
+                ordenadoAscendente = true;
+            } else {
+                CancionesOrdenadas = ordenamientos.DescendenteDuracion(Canciones);
+                ordenadoAscendente = false;
+            }
+        }
+        List<String> lsCa = new ArrayList<>();
+        for (int i = 0; i < CancionesOrdenadas.size(); i++) {
+            lsCa.add(CancionesOrdenadas.get(i).toString());
+        }
+        mostrarListado(lsCa);
     }
 
     public boolean onOptionsItemSelected(MenuItem item) {

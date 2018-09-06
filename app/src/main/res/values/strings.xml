@@ -7,4 +7,6 @@
         <item>Descendente</item>
     </string-array>
     <string name="agregar">Agregar</string>
+    <string name="nombre">Ordenar por nombre</string>
+    <string name="ascendente">Ascendentemente</string>
 </resources>

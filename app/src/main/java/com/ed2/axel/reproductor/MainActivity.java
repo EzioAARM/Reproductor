@@ -17,9 +17,11 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.Spinner;
+import android.widget.Switch;
 import android.widget.Toast;
 
 import java.lang.reflect.Array;
@@ -34,6 +36,7 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
     List<Cancion> CancionesOrdenadas = null;
     Ordenamientos ordenar = new Ordenamientos();
     GlobalClass globalClass = null;
+    boolean ordenadoAscendente = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -102,6 +105,24 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
         });
         ListView lsCanciones = findViewById(R.id.lsCanciones);
         registerForContextMenu(lsCanciones);
+        final Switch ordenarPor = (Switch) findViewById(R.id.ordenarPor);
+        ordenarPor.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if (ordenadoAscendente){
+                    if (ordenarPor.isChecked())
+                        CancionesOrdenadas = ordenar.Ascendente(Canciones);
+                    else
+                        CancionesOrdenadas = ordenar.AscendenteDuracion(Canciones);
+                } else {
+                    if (ordenarPor.isChecked())
+                        CancionesOrdenadas = ordenar.Descendente(Canciones);
+                    else
+                        CancionesOrdenadas = ordenar.DescendenteDuracion(Canciones);
+                }
+                mostrarListado(CancionesOrdenadas);
+            }
+        });
     }
 
     @Override
@@ -154,6 +175,7 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
             case R.id.menu_playlist:
                 Intent Playlists = new Intent(getApplicationContext(), PlaylistActivity.class);
                 startActivity(Playlists);
+                finish();
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
@@ -174,13 +196,23 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
     public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
         String seleccionado = parent.getItemAtPosition(position).toString();
         CharSequence texto = "";
+        Switch ordenarPor = (Switch) findViewById(R.id.ordenarPor);
         if (seleccionado.equals("Ascendente")) {
             texto = "Ordena de forma ascendente";
-            CancionesOrdenadas = ordenar.Ascendente(Canciones);
+            ordenadoAscendente = true;
+            if (ordenarPor.isChecked())
+                CancionesOrdenadas = ordenar.Ascendente(Canciones);
+            else
+                CancionesOrdenadas = ordenar.AscendenteDuracion(Canciones);
         } else if (seleccionado.equals("Descendente")) {
             texto = "Ordena de forma descendente";
-            CancionesOrdenadas = ordenar.Descendente(Canciones);
+            ordenadoAscendente = false;
+            if (ordenarPor.isChecked())
+                CancionesOrdenadas = ordenar.Descendente(Canciones);
+            else
+                CancionesOrdenadas = ordenar.DescendenteDuracion(Canciones);
         }
+
         mostrarListado(CancionesOrdenadas);
         Toast.makeText(this, texto, Toast.LENGTH_SHORT).show();
     }

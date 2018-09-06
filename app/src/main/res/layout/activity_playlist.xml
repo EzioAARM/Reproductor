@@ -6,6 +6,17 @@
     android:layout_height="match_parent"
     tools:context=".PlaylistActivity">
 
+    <Switch
+        android:id="@+id/ordenarPor2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_below="@+id/seleccionar_playlist"
+        android:checked="true"
+        android:text="@string/nombre"
+        tools:checked="true" />
+
     <android.support.v7.widget.Toolbar
         android:id="@+id/my_toolbar"
         android:layout_width="match_parent"
@@ -31,7 +42,26 @@
         android:layout_height="486dp"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
-        android:layout_below="@+id/seleccionar_playlist"
+        android:layout_below="@+id/ordenarPor"
         android:layout_marginTop="25dp" />
+
+    <Switch
+        android:id="@+id/ordenarPor"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_below="@+id/seleccionar_playlist"
+        android:checked="true"
+        android:text="@string/nombre" />
+
+    <Switch
+        android:id="@+id/ordenar_metodo"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_below="@+id/seleccionar_playlist"
+        android:checked="true"
+        android:text="@string/ascendente" />
 
 </RelativeLayout>

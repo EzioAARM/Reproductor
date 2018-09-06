@@ -30,4 +30,32 @@ public class Ordenamientos {
         }
         return canciones;
     }
+
+    public List<Cancion> DescendenteDuracion(List<Cancion> canciones){
+        Cancion temp = null;
+        for (int i = 0; i < canciones.size(); i++) {
+            for (int j = 0; j < canciones.size(); j++) {
+                if (canciones.get(i).Duracion.compareTo(canciones.get(j).Duracion)  >= 0){
+                    temp = canciones.get(i);
+                    canciones.set(i, canciones.get(j));
+                    canciones.set(j, temp);
+                }
+            }
+        }
+        return canciones;
+    }
+
+    public List<Cancion> AscendenteDuracion(List<Cancion> canciones){
+        Cancion temp = null;
+        for (int i = 0; i < canciones.size(); i++) {
+            for (int j = 0; j < canciones.size(); j++) {
+                if (canciones.get(i).Duracion.compareTo(canciones.get(j).Duracion)  <= 0){
+                    temp = canciones.get(i);
+                    canciones.set(i, canciones.get(j));
+                    canciones.set(j, temp);
+                }
+            }
+        }
+        return canciones;
+    }
 }
